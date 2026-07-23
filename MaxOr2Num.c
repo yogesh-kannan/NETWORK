@@ -1,13 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
-
-// Simple Hash Table Implementation for C
 typedef struct {
     int *keys;
     int size;
 } HashSet;
-
-// Initialize Hash Table
 HashSet* createSet(int size) {
     HashSet* set = (HashSet*)malloc(sizeof(HashSet));
     set->size = size * 3; // Kept large to avoid linear probing collisions
@@ -15,8 +11,6 @@ HashSet* createSet(int size) {
     memset(set->keys, -1, set->size * sizeof(int));
     return set;
 }
-
-// Insert into Hash Table using linear probing
 void insertSet(HashSet* set, int key) {
     int idx = (key < 0 ? -key : key) % set->size;
     while (set->keys[idx] != -1) {
@@ -25,8 +19,6 @@ void insertSet(HashSet* set, int key) {
     }
     set->keys[idx] = key;
 }
-
-// Check if element exists in Hash Table
 int countSet(HashSet* set, int key) {
     int idx = (key < 0 ? -key : key) % set->size;
     while (set->keys[idx] != -1) {
@@ -35,14 +27,11 @@ int countSet(HashSet* set, int key) {
     }
     return 0; // Not found
 }
-
-// Free Hash Table memory
 void freeSet(HashSet* set) {
     free(set->keys);
     free(set);
 }
 
-// Target function called by the platform judge
 int findMaximumXOR(int* nums, int numsSize) {
     int ans = 0, mask = 0;
     
