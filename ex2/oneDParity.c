@@ -1,10 +1,20 @@
 #include <stdio.h>
 #include <string.h>
 
+void corrupt_data(char *data, int position) {
+    // Convert 1-based user input to 0-based array index
+    int index = position - 1;
+
+    if (data[index] == '1') {
+        data[index] = '0';
+    } else if (data[index] == '0') {
+        data[index] = '1';
+    }
+}
 int main()
 {
     char data[100], received[100];
-    int i, ones = 0, parityChoice;
+    int i,ch, ones = 0, parityChoice;
     char parityBit;
 
     printf("Enter Binary Data: ");
@@ -37,11 +47,16 @@ int main()
 
     // Transmitted data
     strcat(data, (char[]){parityBit, '\0'});
+    printf("if you want to corrupt enter the position else enter 0:");
+    scanf("%d",&ch);
+    if (ch!=0){
+       corrupt_data(data, ch);
+    }
     printf("Transmitted Data: %s\n", data);
 
     // Receiver side
-    printf("\nEnter Received Data: ");
-    scanf("%s", received);
+    strcpy(received,data);
+    printf("\nReceived data: %s\n",received);
 
     ones = 0;
     for(i = 0; received[i] != '\0'; i++)
@@ -67,33 +82,3 @@ int main()
 
     return 0;
 }
-
-/**
-Sample Output (Even Parity)
-
-Input
-
-Enter Binary Data: 1011001
-Choose Parity:
-1. Even Parity
-2. Odd Parity
-Enter Choice: 1
-
-Output
-
-Generated Parity Bit: 0
-Transmitted Data: 10110010
-
-Enter Received Data: 10110010
-Status: No Error Detected
-Sample Output (Error Case)
-
-Received Data
-
-10110011
-
-Output
-
-Status: Error Detected
-
-*/
