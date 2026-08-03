@@ -144,28 +144,3 @@ int main()
 
     return 0;
 }
-
-/**
-Enter Sender Binary Data: 1101011011
-Enter Generator Polynomial: 10011
-
-Generator Polynomial is Valid.
-
-CRC Remainder       : 1110
-Transmitted Codeword: 11010110111110
-
-Choose Testcase
-0 - Valid
-1 - Invalid
-Enter Choice: 0
-
-Received Codeword   : 11010110111110
-Receiver Remainder  : 0000
-No Error Detected (Valid Testcase)
-
-Enter Sender Binary Data: 1101011011
-Enter Generator Polynomial: 10010
-
-Generator Polynomial is Invalid.
-Message discarded because the generator polynomial is invalid.
-*/
