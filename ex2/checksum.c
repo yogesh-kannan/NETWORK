@@ -7,9 +7,9 @@
 // Binary addition with end-around carry
 void binaryAdd(char a[], char b[], char result[], int n)
 {
-    int carry = 0, sum;
+    int carry = 0, sum,i;
 
-    for (int i = n - 1; i >= 0; i--)
+    for (i = n - 1; i >= 0; i--)
     {
         sum = (a[i] - '0') + (b[i] - '0') + carry;
         result[i] = (sum % 2) + '0';
@@ -19,7 +19,7 @@ void binaryAdd(char a[], char b[], char result[], int n)
     // End-around carry
     while (carry)
     {
-        for (int i = n - 1; i >= 0; i--)
+        for (i = n - 1; i >= 0; i--)
         {
             sum = (result[i] - '0') + carry;
             result[i] = (sum % 2) + '0';
@@ -33,7 +33,8 @@ void binaryAdd(char a[], char b[], char result[], int n)
 // One's complement
 void onesComplement(char str[], int n)
 {
-    for (int i = 0; i < n; i++)
+    int i;
+    for (i = 0; i < n; i++)
     {
         if (str[i] == '0')
             str[i] = '1';
@@ -44,7 +45,7 @@ void onesComplement(char str[], int n)
 
 int main()
 {
-    int n, size;
+    int n,i, size;
 
     printf("Enter number of binary data words: ");
     scanf("%d", &n);
@@ -56,7 +57,7 @@ int main()
 
     printf("\nEnter Binary Data:\n");
 
-    for (int i = 0; i < n; i++)
+    for (i = 0; i < n; i++)
     {
         printf("Data %d: ", i + 1);
         scanf("%s", data[i]);
@@ -72,7 +73,7 @@ int main()
     strcpy(sum, data[0]);
 
     // Sender Side Addition
-    for (int i = 1; i < n; i++)
+    for (i = 1; i < n; i++)
     {
         char temp[SIZE];
         binaryAdd(sum, data[i], temp, size);
@@ -89,7 +90,7 @@ int main()
 
     printf("\n\n--- Transmitted Data ---\n");
 
-    for (int i = 0; i < n; i++)
+    for (i = 0; i < n; i++)
         printf("Data %d : %s\n", i + 1, data[i]);
 
     printf("Checksum : %s\n", checksum);
@@ -98,16 +99,16 @@ int main()
     char received[MAX][SIZE];
     char recvChecksum[SIZE];
 
-    printf("\nEnter Receiver Data\n");
+    printf("\n--- Received Data ---\n");
 
-    for (int i = 0; i < n; i++)
+    for (i = 0; i < n; i++)
     {
-        printf("Received Data %d: ", i + 1);
-        scanf("%s", received[i]);
+        strcpy(received[i],data[i]);
+        printf("Received Data %d : %s\n ", i + 1,received[i]);
     }
 
-    printf("Received Checksum: ");
-    scanf("%s", recvChecksum);
+    strcpy(recvChecksum,checksum);
+    printf("Received Checksum : %s\n",recvChecksum);
 
     int choice;
 
@@ -155,7 +156,7 @@ int main()
     char receiverSum[SIZE];
     strcpy(receiverSum, received[0]);
 
-    for (int i = 1; i < n; i++)
+    for (i = 1; i < n; i++)
     {
         char temp[SIZE];
         binaryAdd(receiverSum, received[i], temp, size);
@@ -176,7 +177,7 @@ int main()
 
     int error = 0;
 
-    for (int i = 0; i < size; i++)
+    for (i = 0; i < size; i++)
     {
         if (final[i] != '0')
         {
@@ -192,101 +193,3 @@ int main()
 
     return 0;
 }
-
-/**
-Test Case 1 – Valid (No Error)
-
-Input
-
-Enter number of binary data words: 4
-Enter size of each binary word: 8
-
-Data 1: 10011001
-Data 2: 11001100
-Data 3: 11110000
-Data 4: 00001111
-
-Introduce Error?
-0
-
-Expected Output
-
-Binary Sum      : 10110110
-Checksum        : 01001001
-
-Receiver Sum    : 11111111
-Complement      : 00000000
-
-Status : NO ERROR
-Test Case 2 – Single Bit Error
-
-Input
-
-Enter number of binary data words: 4
-Enter size of each binary word: 8
-
-Data 1: 10011001
-Data 2: 11001100
-Data 3: 11110000
-Data 4: 00001111
-
-Introduce Error?
-1
-
-Enter number of bits to flip: 1
-
-Flip in data word: 2
-Bit Position: 5
-
-Expected Output
-
-Receiver Sum    : (Not equal to 11111111)
-Complement      : (Not all zeros)
-
-Status : ERROR DETECTED
-Test Case 3 – Multiple Bit Errors
-
-Input
-
-Enter number of binary data words: 3
-Enter size of each binary word: 8
-
-Data 1: 11110000
-Data 2: 10101010
-Data 3: 01010101
-
-Introduce Error?
-1
-
-Enter number of bits to flip: 2
-
-Flip in data word: 1
-Bit Position: 3
-
-Flip in checksum
-Bit Position: 7
-
-Expected Output
-
-Status : ERROR DETECTED
-Test Case 4 – Another Valid Case
-
-Input
-
-Enter number of binary data words: 2
-Enter size of each binary word: 8
-
-Data 1: 11111111
-Data 2: 00000000
-
-Introduce Error?
-0
-
-Expected Output
-
-Receiver Sum    : 11111111
-Complement      : 00000000
-
-Status : NO ERROR
-
-*/
