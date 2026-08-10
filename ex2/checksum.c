@@ -193,3 +193,126 @@ int main()
 
     return 0;
 }
+/**
+[24bcs063@mepcolinux ex2]$./p3
+Enter number of binary data words: 4
+Enter size of each binary word: 8
+
+Enter Binary Data:
+Data 1: 10011011
+Data 2: 11001100
+Data 3: 11110000
+Data 4: 00001111
+
+Binary Sum      : 01101000
+Checksum        : 10010111
+
+--- Transmitted Data ---
+Data 1 : 10011011
+Data 2 : 11001100
+Data 3 : 11110000
+Data 4 : 00001111
+Checksum : 10010111
+
+--- Receiver Data ---
+Received Data 1: 10011011
+Received Data 2: 11001100
+Received Data 3: 11110000
+Received Data 4: 00001111
+Received Checksum: 10010111
+
+Introduce Error?
+0. No
+1. Yes
+Enter Choice: 0
+
+--- Receiver Side ---
+Binary Sum : 11111111
+Complement : 00000000
+
+Status : NO ERROR
+[24bcs063@mepcolinux ex2]$./p3
+Enter number of binary data words: 4
+Enter size of each binary word: 8
+
+Enter Binary Data:
+Data 1: 10011011
+Data 2: 11001100
+Data 3: 11110000
+Data 4: 00001111
+
+Binary Sum      : 01101000
+Checksum        : 10010111
+
+--- Transmitted Data ---
+Data 1 : 10011011
+Data 2 : 11001100
+Data 3 : 11110000
+Data 4 : 00001111
+Checksum : 10010111
+
+--- Receiver Data ---
+Received Data 1: 10011011
+Received Data 2: 11001100
+Received Data 3: 11110000
+Received Data 4: 00001111
+Received Checksum: 10010111
+
+Introduce Error?
+0. No
+1. Yes
+Enter Choice: 1
+Enter number of bits to flip: 1
+Flip in (1-5 data words, 5 for checksum): 2
+Bit Position (1-8): 2
+
+--- Receiver Side ---
+Binary Sum : 10111111
+Complement : 01000000
+
+Status : ERROR DETECTED
+[24bcs063@mepcolinux ex2]$./p3
+Enter number of binary data words: 4
+Enter size of each binary word: 8
+
+Enter Binary Data:
+Data 1: 10011011
+Data 2: 11001100
+Data 3: 11110000
+Data 4: 00001111
+
+Binary Sum      : 01101000
+Checksum        : 10010111
+
+--- Transmitted Data ---
+Data 1 : 10011011
+Data 2 : 11001100
+Data 3 : 11110000
+Data 4 : 00001111
+Checksum : 10010111
+
+--- Receiver Data ---
+Received Data 1: 10011011
+Received Data 2: 11001100
+Received Data 3: 11110000
+Received Data 4: 00001111
+Received Checksum: 10010111
+
+Introduce Error?
+0. No
+1. Yes
+Enter Choice: 1
+Enter number of bits to flip: 3
+Flip in (1-5 data words, 5 for checksum): 1
+Bit Position (1-8): 2
+Flip in (1-5 data words, 5 for checksum): 3
+Bit Position (1-8): 4
+Flip in (1-5 data words, 5 for checksum): 5
+Bit Position (1-8): 4
+
+--- Receiver Side ---
+Binary Sum : 00100000
+Complement : 11011111
+
+Status : ERROR DETECTED
+============================================*/
