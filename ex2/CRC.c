@@ -144,3 +144,132 @@ int main()
 
     return 0;
 }
+/**
+[24bcs063@mepcolinux ex2]$./p2
+Enter Sender Binary Data: 1101011011
+Enter Generator Polynomial: 10011
+
+Generator Polynomial is Valid.
+
+CRC Remainder       : 1110
+Transmitted Codeword: 11010110111110
+
+Choose Testcase
+0 - Valid
+1 - Invalid
+Enter Choice: 0
+
+Received Codeword   : 11010110111110
+Receiver Remainder  : 0000
+No Error Detected (Valid Testcase)
+[24bcs063@mepcolinux ex2]$./p2
+Enter Sender Binary Data: 1101011011
+Enter Generator Polynomial: 10011
+
+Generator Polynomial is Valid.
+
+CRC Remainder       : 1110
+Transmitted Codeword: 11010110111110
+
+Choose Testcase
+0 - Valid
+1 - Invalid
+Enter Choice: 1
+Enter Bit Position to Flip (1-14): 3
+
+Received Codeword   : 11110110111110
+Receiver Remainder  : 1110
+Error Detected (Invalid Testcase)
+[24bcs063@mepcolinux ex2]$./p2
+Enter Sender Binary Data: 1101011011
+Enter Generator Polynomial: 1
+
+Generator Polynomial is Invalid.
+Message discarded because the generator polynomial is invalid.
+[24bcs063@mepcolinux ex2]$./p2
+Enter Sender Binary Data: 1101011011
+Enter Generator Polynomial: 1010
+
+Generator Polynomial is Invalid.
+Message discarded because the generator polynomial is invalid.
+[24bcs063@mepcolinux ex2]$./p2
+Enter Sender Binary Data: 1101011011
+Enter Generator Polynomial: 01101
+
+Generator Polynomial is Invalid.
+Message discarded because the generator polynomial is invalid.
+[24bcs063@mepcolinux ex2]$./p2
+Enter Sender Binary Data: 1101011011
+Enter Generator Polynomial: 1@001
+
+Generator Polynomial is Invalid.
+Message discarded because the generator polynomial is invalid.
+[24bcs063@mepcolinux ex2]$./p2
+Enter Sender Binary Data: 101100110000
+Enter Generator Polynomial: 10011
+
+Generator Polynomial is Valid.
+
+CRC Remainder       : 1100
+Transmitted Codeword: 1011001100001100
+
+Choose Testcase
+0 - Valid
+1 - Invalid
+Enter Choice: 0
+
+Received Codeword   : 1011001100001100
+Receiver Remainder  : 0000
+No Error Detected (Valid Testcase)
+[24bcs063@mepcolinux ex2]$./p2
+Enter Sender Binary Data: 1010000000
+Enter Generator Polynomial: 1001
+
+Generator Polynomial is Valid.
+
+CRC Remainder       : 011
+Transmitted Codeword: 1010000000011
+
+Choose Testcase
+0 - Valid
+1 - Invalid
+Enter Choice: 0
+
+Received Codeword   : 1010000000011
+Receiver Remainder  : 000
+No Error Detected (Valid Testcase)
+[24bcs063@mepcolinux ex2]$./p2
+Enter Sender Binary Data: 110101000
+Enter Generator Polynomial: 1011
+
+Generator Polynomial is Valid.
+
+CRC Remainder       : 010
+Transmitted Codeword: 110101000010
+
+Choose Testcase
+0 - Valid
+1 - Invalid
+Enter Choice: 0
+
+Received Codeword   : 110101000010
+Receiver Remainder  : 000
+No Error Detected (Valid Testcase)
+[24bcs063@mepcolinux ex2]$./p2
+Enter Sender Binary Data: 1001000
+Enter Generator Polynomial: 1011
+
+Generator Polynomial is Valid.
+
+CRC Remainder       : 001
+Transmitted Codeword: 1001000001
+
+Choose Testcase
+0 - Valid
+1 - Invalid
+Enter Choice: 0
+
+Received Codeword   : 1001000001
+Receiver Remainder  : 000
+No Error Detected (Valid Testcase)
+*/
