@@ -82,3 +82,107 @@ int main()
 
     return 0;
 }
+
+/**[24bcs063@mepcolinux ex2]$./p1
+Enter Binary Data: 101011
+Choose Parity:
+1. Even Parity
+2. Odd Parity
+Enter Choice: 1
+
+Generated Parity Bit: 0
+if you want to corrupt enter the position else enter 0:0
+Transmitted Data: 1010110
+
+Received data: 1010110
+Status: No Error Detected
+[24bcs063@mepcolinux ex2]$./p1
+Enter Binary Data: 101101
+Choose Parity:
+1. Even Parity
+2. Odd Parity
+Enter Choice: 1
+
+Generated Parity Bit: 0
+if you want to corrupt enter the position else enter 0:2
+Transmitted Data: 1111010
+
+Received data: 1111010
+Status: Error Detected
+[24bcs063@mepcolinux ex2]$./p1
+Enter Binary Data: 101100
+Choose Parity:
+1. Even Parity
+2. Odd Parity
+Enter Choice: 1
+
+Generated Parity Bit: 1
+if you want to corrupt enter the position else enter 0:2
+Transmitted Data: 1111001
+
+Received data: 1111001
+Status: Error Detected
+[24bcs063@mepcolinux ex2]$./p1
+Enter Binary Data: 101100
+Choose Parity:
+1. Even Parity
+2. Odd Parity
+Enter Choice: 1
+
+Generated Parity Bit: 1
+if you want to corrupt enter the position else enter 0:0
+Transmitted Data: 1011001
+
+Received data: 1011001
+Status: No Error Detected
+[24bcs063@mepcolinux ex2]$./p1
+Enter Binary Data: 101100
+Choose Parity:
+1. Even Parity
+2. Odd Parity
+Enter Choice: 2
+
+Generated Parity Bit: 0
+if you want to corrupt enter the position else enter 0:0
+Transmitted Data: 1011000
+
+Received data: 1011000
+Status: No Error Detected
+[24bcs063@mepcolinux ex2]$./p1
+Enter Binary Data: 101100
+Choose Parity:
+1. Even Parity
+2. Odd Parity
+Enter Choice: 2
+
+Generated Parity Bit: 0
+if you want to corrupt enter the position else enter 0:2
+Transmitted Data: 1111000
+
+Received data: 1111000
+Status: Error Detected
+[24bcs063@mepcolinux ex2]$./p1
+Enter Binary Data: 101011
+Choose Parity:
+1. Even Parity
+2. Odd Parity
+Enter Choice: 2
+
+Generated Parity Bit: 1
+if you want to corrupt enter the position else enter 0:0
+Transmitted Data: 1010111
+
+Received data: 1010111
+Status: No Error Detected
+[24bcs063@mepcolinux ex2]$./p1
+Enter Binary Data: 101011
+Choose Parity:
+1. Even Parity
+2. Odd Parity
+Enter Choice: 2
+
+Generated Parity Bit: 1
+if you want to corrupt enter the position else enter 0:2
+Transmitted Data: 1110111*/
+
+Received data: 1110111
