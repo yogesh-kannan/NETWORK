@@ -1,93 +1,296 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
-int main() {
-    int m,r=0,i,j,k=0,n,pos;
-    printf("Enter number of data bits: ");
-    scanf("%d",&m);
-    while((1<<r) < m+r+1) r++;
-    n=m+r;
-    int data[m+1], ham[n+1];
-    printf("Enter %d data bits:\n",m);
-    for(i=m;i>=1;i--) scanf("%d",&data[i]);
-    k=1;
-    for(i=1;i<=n;i++){
-        if((i&(i-1))==0) ham[i]=0;
-        else ham[i]=data[k++];
-    }
-    for(i=0;i<r;i++){
-        int p=1<<i,par=0;
-        for(j=1;j<=n;j++) if(j&p) par^=ham[j];
-        ham[p]=par;
-    }
-    printf("\nHamming Code: ");
-    for(i=n;i>=1;i--) printf("%d",ham[i]);
-    printf("\nEnter error position (0 for no error): ");
-    scanf("%d",&pos);
-    if(pos>0&&pos<=n) ham[pos]^=1;
-    printf("Received Code: ");
-    for(i=n;i>=1;i--) printf("%d",ham[i]);
-    int syn=0;
-    for(i=0;i<r;i++){
-        int p=1<<i,par=0;
-        for(j=1;j<=n;j++) if(j&p) par^=ham[j];
-        if(par) syn+=p;
-    }
-    if(syn){
-        printf("\nError detected at position %d",syn);
-        ham[syn]^=1;
-        printf("\nCorrected Code: ");
-        for(i=n;i>=1;i--) printf("%d",ham[i]);
-    } else printf("\nNo Error Detected");
-    printf("\nRecovered Data: ");
-    for(i=n;i>=1;i--) if((i&(i-1))!=0) printf("%d",ham[i]);
-    printf("\n");
-    return 0;
+#define MAX 100
+
+int code[MAX];      /* bit value at each position (1-indexed)      */
+int filled[MAX];    /* whether that position's value is known yet  */
+char label[MAX][4]; /* "D7", "P2" ... text label for each position */
+
+/* ---------- helper ---------- */
+int isPowerOf2(int pos)
+{
+    return pos > 0 && (pos & (pos - 1)) == 0;
 }
 
-/**
- Enter number of data bits: 7
-Enter 7 data bits:
-1 0 0 1 1 0 1
+/* ================= STEP 1 & 2 : find p ================= */
+int findParityBits(int n)
+{
+    int p = 1;
+    printf("\nStep 2:\n========\nFinding parity bits (p)\n-----------------------------\n");
+    while (1)
+    {
+        if (n + p + 1 <= (int)pow(2, p))
+        {
+            break;
+        }
+        else
+        {
+            p++;
+        }
+    }
+    printf("\nRequired parity bits = %d\n", p);
+    return p;
+}
 
-Enter error position (0 for no error): 0
-Hamming Code: 10011100101
-Received Code: 10011100101
-No Error Detected
-Recovered Data: 1001101
+/* ============ build D7..D1 / P4..P1 style labels ============ */
+void assignLabels(int totalLen, int p)
+{
+    int n = totalLen - p,j;
+    int dNum = n;
+    for (j = totalLen; j >= 1; j--)
+    {
+        if (isPowerOf2(j))
+        {
+            int k = (int)(log2(j)) + 1;
+            sprintf(label[j], "P%d", k);
+        }
+        else
+        {
+            sprintf(label[j], "D%d", dNum);
+            dNum--;
+        }
+    }
+}
 
-Enter number of data bits: 7
-Enter 7 data bits:
-1 0 0 1 1 0 1
+/* ================= STEP 3 : place data bits ================= */
+void placeDataBits(const char *data, int totalLen)
+{
+    int idx = 0,j;
+    for (j = totalLen; j >= 1; j--)
+    {
+        if (!isPowerOf2(j))
+        {
+            code[j] = data[idx] - '0';
+            filled[j] = 1;
+            idx++;
+        }
+        else
+        {
+            code[j] = 0;
+            filled[j] = 0;
+        }
+    }
+}
 
-Enter error position (0 for no error): 5
-Hamming Code: 10011100101
-Received Code: 10011110101
-Error detected at position 5
-Corrected Code: 10011100101
-Recovered Data: 1001101
+/* ================= display the frame (position/type/value) ================= */
+void displayFrame(int totalLen)
+{
+    int j;
+    printf("\nPosition : ");
+    for (j = totalLen; j >= 1; j--)
+        printf("%3d", j);
 
+    printf("\nType     : ");
+    for (j = totalLen; j >= 1; j--)
+        printf("%3s", label[j]);
 
-Enter number of data bits: 4
-Enter 4 data bits:
-1 0 1 1
+    printf("\nValue    : ");
+    for (j = totalLen; j >= 1; j--)
+    {
+        if (filled[j])
+            printf("%3d", code[j]);
+        else
+            printf("  _");
+    }
+    printf("\n");
+}
 
-Enter error position (0 for no error): 0
-Hamming Code: 1010101
-Received Code: 1010101
-No Error Detected
-Recovered Data: 1011
+/* ================= STEP 4 : calculate each parity bit ================= */
+void calculateParity(int totalLen, int p, int parityType)
+{
+    int k,j;
+    printf("\nStep 4:\n========\nCalculating parity bits (%s parity)\n----------------------------------\n",
+           parityType == 0 ? "Even" : "Odd");
 
+    for (k = 1; k <= p; k++)
+    {
+        int parityPos = 1 << (k - 1);
+        if (parityPos > totalLen)
+            continue;
 
-Enter number of data bits: 4
-Enter 4 data bits:
-1 0 1 1
+        printf("\nCalculate P%d\n\nChecking positions : ", k);
+        for (j = 1; j <= totalLen; j++)
+            if (j & parityPos)
+                printf("%d ", j);
 
-Enter error position (0 for no error): 3
-Hamming Code: 1010101
-Received Code: 1010001
-Error detected at position 3
-Corrected Code: 1010101
-Recovered Data: 1011
+        printf("\nValues             : ");
+        int count = 0;
+        for (j = 1; j <= totalLen; j++)
+        {
+            if (j & parityPos)
+            {
+                if (j == parityPos)
+                    printf("_ ");
+                else
+                {
+                    printf("%d ", code[j]);
+                    count += code[j];
+                }
+            }
+        }
 
-*/
+        int bit;
+        if (parityType == 0)
+            bit = (count % 2 == 0) ? 0 : 1; /* even */
+        else
+            bit = (count % 2 == 0) ? 1 : 0; /* odd  */
+
+        code[parityPos] = bit;
+        filled[parityPos] = 1;
+        printf("\n");
+        printf("P%d = %d\n", k, bit);
+    }
+}
+
+/* ================= orchestrator : encode ================= */
+void generateHammingCode(const char *data, int parityType)
+{
+    int n = strlen(data),j;
+    printf("\nStep 1:\n=======\nNumber of data bits (n) = %d\n", n);
+
+    int p = findParityBits(n);
+    int totalLen = n + p;
+    printf("Total bits = %d\n", totalLen);
+
+    assignLabels(totalLen, p);
+    placeDataBits(data, totalLen);
+
+    printf("\nStep 3:\n=======\nInsert empty parity locations\n---------------------------------------\n");
+    displayFrame(totalLen);
+
+    calculateParity(totalLen, p, parityType);
+
+    printf("\nFinal Hamming Code\n---------------------\n");
+    displayFrame(totalLen);
+
+    printf("\n\nData to be transmitted: ");
+    for (j = totalLen; j >= 1; j--)
+        printf("%d", code[j]);
+    printf("\n");
+}
+
+/* ================= detect error (syndrome) ================= */
+int detectError(int totalLen, int p, int parityType)
+{
+    int syndrome = 0,j,k;
+    printf("\nChecking received code:\n");
+
+    for (k = p; k >= 1; k--)
+    {
+        int parityPos = 1 << (k - 1);
+        if (parityPos > totalLen)
+            continue;
+
+        int count = 0;
+        for (j = 1; j <= totalLen; j++)
+            if (j & parityPos)
+                count += code[j]; /* parity bit itself included */
+
+        int checkBit;
+        if (parityType == 0)
+            checkBit = (count % 2 == 0) ? 0 : 1;
+        else
+            checkBit = (count % 2 == 0) ? 1 : 0;
+
+        printf("Checking P%d ... = %d\n", k, checkBit);
+        if (checkBit)
+            syndrome += parityPos;
+    }
+
+    printf("\nSyndrome (binary value of check bits) = %d\n", syndrome);
+    return syndrome;
+}
+
+/* ================= correct the flagged bit ================= */
+void correctError(int errorPos, int totalLen)
+{
+    if (errorPos == 0)
+    {
+        printf("\nNo error detected.\n");
+    }
+    else if (errorPos > totalLen)
+    {
+        printf("\nError position out of range - more than 1 bit may be corrupted.\n");
+    }
+    else
+    {
+        printf("\nError found at Position %d -> flipping bit to correct.\n", errorPos);
+        code[errorPos] = code[errorPos] ? 0 : 1;
+    }
+    printf("\nCorrected Code\n");
+    displayFrame(totalLen);
+    printf("\n");
+}
+
+/* ================= pull the original data bits back out ================= */
+void extractData(int totalLen)
+{
+    int j;
+    printf("\nOriginal Data: ");
+    for (j = totalLen; j >= 1; j--)
+        if (!isPowerOf2(j))
+            printf("%d", code[j]);
+    printf("\n");
+}
+
+/* ================= main menu ================= */
+int main()
+{
+    int choice, parityType, totalLen, p,j,idx;
+    char input[MAX];
+    while(1){
+    printf("=== HAMMING CODE PROGRAM ===\n");
+    printf("1. Encode data (generate Hamming code)\n");
+    printf("2. Check received code for error and correct it\n");
+    printf("3. Exit\n");
+    printf("Enter choice: ");
+    scanf("%d", &choice);
+    if (choice ==1 || choice ==2){
+    printf("Enter parity type (0 = Even, 1 = Odd): ");
+    scanf("%d", &parityType);
+    }
+    if (choice == 1)
+    {
+        printf("Enter data bits (e.g. 1011010): ");
+        scanf("%s", input);
+        generateHammingCode(input, parityType);
+    }
+    else if (choice == 2)
+    {
+        printf("Enter received code (e.g. 10101010111): ");
+        scanf("%s", input);
+
+        totalLen = strlen(input);
+        p = 0;
+        while ((int)pow(2, p) < totalLen + 1)
+            p++;
+
+        assignLabels(totalLen, p);
+        for (j = totalLen, idx = 0; j >= 1; j--, idx++)
+        {
+            code[j] = input[idx] - '0';
+            filled[j] = 1;
+        }
+
+        printf("\nReceived Code\n");
+        displayFrame(totalLen);
+
+        int syndrome = detectError(totalLen, p, parityType);
+        correctError(syndrome, totalLen);
+        extractData(totalLen);
+    }
+    else if (choice == 3)
+    {
+        printf("Exiting...\n");
+        break;
+    }
+    else
+    {
+        printf("Invalid choice.\n");
+    }
+    }
+    return 0;
+}
