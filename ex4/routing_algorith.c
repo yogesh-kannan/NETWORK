@@ -11,9 +11,7 @@ void displayMatrix(int n, int graph[MAX][MAX])
 {
     int i, j;
 
-    printf("\n============================================\n");
-    printf("              COST MATRIX\n");
-    printf("============================================\n");
+    printf("\n------COST MATRIX------\n");
 
     printf("\n\t");
 
@@ -104,11 +102,7 @@ void distanceVector(int n, int cost[MAX][MAX])
     } while (updated);
 
 
-    /* Display Distance Vector Table */
-
-    printf("\n============================================\n");
-    printf("          DISTANCE VECTOR ROUTING\n");
-    printf("============================================\n");
+    printf("\n------DISTANCE VECTOR ROUTING------\n");
 
     printf("\nNumber of iterations = %d\n", iteration);
 
@@ -262,12 +256,7 @@ void linkState(int n, int graph[MAX][MAX])
         }
     }
 
-
-    /* Display Link State Table */
-
-    printf("\n============================================\n");
-    printf("             LINK STATE ROUTING\n");
-    printf("============================================\n");
+    printf("\n------LINK STATE ROUTING------\n");
 
     printf("\nSource Router: R%d\n", source + 1);
 
@@ -293,6 +282,117 @@ void linkState(int n, int graph[MAX][MAX])
         }
     }
 }
+/* -------------------------------------------------
+ FUNCTION 6: CHANGE LINK COST
+ Updates the bidirectional cost between two routers
+ ------------------------------------------------- */
+void changeCost(int n, int graph[MAX][MAX], int startRouter, int endRouter, int newCost)
+{
+    // Convert 1-based router input (R1, R2) to 0-based array indices
+    int start = startRouter - 1;
+    int end = endRouter - 1;
+
+    // Boundary check to prevent array index out of bounds crashes
+    if (start < 0 || start >= n || end < 0 || end >= n)
+    {
+        printf("\nError: Invalid router selection! Must be between 1 and %d.\n", n);
+        return;
+    }
+
+    // A router's cost to itself must always remain 0
+    if (start == end)
+    {
+        printf("\nWarning: Cost from a router to itself cannot be changed from 0.\n");
+        return;
+    }
+
+    // Update the cost symmetrically for bidirectional network graph linkage
+    graph[start][end] = newCost;
+    graph[end][start] = newCost;
+
+    printf("\nSuccessfully updated link R%d <-> R%d to Cost: ", startRouter, endRouter);
+    if (newCost == INF)
+    {
+        printf("INF (Link Down)\n");
+    }
+    else
+    {
+        printf("%d\n", newCost);
+    }
+}
+/* -------------------------------------------------
+ FUNCTION 7: FIND MINIMUM COST PATH (PAIRWISE)
+ Computes and prints the shortest path between two specific routers
+ ------------------------------------------------- */
+void findMinCostPath(int n, int graph[MAX][MAX], int startRouter, int endRouter)
+{
+    int distance[MAX];
+    int visited[MAX];
+    int parent[MAX];
+    int i, count, current;
+
+    // Convert 1-based user input to 0-based array index keys
+    int source = startRouter - 1;
+    int target = endRouter - 1;
+
+    // Bounds checking
+    if (source < 0 || source >= n || target < 0 || target >= n)
+    {
+        printf("\nError: Invalid router bounds selection!\n");
+        return;
+    }
+
+    // Initialize arrays
+    for (i = 0; i < n; i++)
+    {
+        distance[i] = INF;
+        visited[i] = 0;
+        parent[i] = -1;
+    }
+    distance[source] = 0;
+
+    // Dijkstra's Algorithm execution loop
+    for (count = 0; count < n - 1; count++)
+    {
+        current = findMinimum(distance, visited, n); // Reuses Function 3 from your code
+
+        if (current == -1)
+            break;
+
+        visited[current] = 1;
+
+        // Early exit: optimization if we successfully reached our specific destination
+        if (current == target)
+            break;
+
+        for (i = 0; i < n; i++)
+        {
+            if (!visited[i] && graph[current][i] != INF && distance[current] != INF)
+            {
+                int newDistance = distance[current] + graph[current][i];
+                if (newDistance < distance[i])
+                {
+                    distance[i] = newDistance;
+                    parent[i] = current;
+                }
+            }
+        }
+    }
+
+    // Output formatting block
+    printf("\n------ PATH ANALYSIS: R%d to R%d ------\n", startRouter, endRouter);
+    if (distance[target] == INF)
+    {
+        printf("Status: NO PATH EXISTS (The destination is completely isolated)\n");
+    }
+    else
+    {
+        printf("Absolute Minimum Cost: %d\n", distance[target]);
+        printf("Shortest Router Path: ");
+        displayPath(parent, target); // Reuses Function 4 from your code to auto-unwrap string traces
+        printf("\n");
+    }
+}
 
 
 /* -------------------------------------------------
@@ -306,114 +406,403 @@ int main()
 
     int i, j;
     int choice;
+while(1){
+    printf("\n------ROUTING ALGORITHM SIMULATOR MENU------\n");
 
-    printf("============================================\n");
-    printf("       ROUTING ALGORITHM SIMULATOR\n");
-    printf("============================================\n");
-
-    printf("\n1. Distance Vector Routing");
-    printf("\n2. Link State Routing");
-    printf("\n3. Run Both Algorithms");
-    printf("\n4. Exit");
+    printf("\n1. Enter cost matrix");
+    printf("\n2. Distance Vector Routing");
+    printf("\n3. Link State Routing");
+    printf("\n4. Run Both Algorithms");
+    printf("\n5. Change Cost");
+    printf("\n6. Find minimum cost path");
+    printf("\n7. Exit");
 
     printf("\n\nEnter your choice: ");
     scanf("%d", &choice);
 
-
-    /* Exit */
-
-    if (choice == 4)
-    {
-        printf("\nProgram terminated.\n");
-        return 0;
-    }
-
-
-    /* Validate choice */
-
-    if (choice < 1 || choice > 4)
-    {
-        printf("\nInvalid choice!\n");
-        return 0;
-    }
-
-
-    /* Input number of routers */
-
-    printf("\nEnter number of routers (maximum %d): ",
-           MAX);
-
-    scanf("%d", &n);
-
-    if (n <= 0 || n > MAX)
-    {
-        printf("\nInvalid number of routers!\n");
-        return 0;
-    }
-
-
-    /* Input cost matrix */
-
-    printf("\nEnter the cost matrix.\n");
-    printf("Enter %d for no direct connection.\n\n",
-           INF);
-
-    for (i = 0; i < n; i++)
-    {
-        for (j = 0; j < n; j++)
-        {
-            printf("Cost R%d -> R%d: ",
-                   i + 1,
-                   j + 1);
-
-            scanf("%d", &graph[i][j]);
-
-            /* Cost from router to itself */
-
-            if (i == j)
-                graph[i][j] = 0;
-        }
-    }
-
-
-    /* Display network */
-
-    displayMatrix(n, graph);
-
-
-    /* Select Algorithm */
-
+    int sRouter, eRouter, uCost;
     switch (choice)
     {
         case 1:
+            printf("\nEnter number of routers (maximum %d): ",MAX);
+            scanf("%d", &n);
+            if (n <= 0 || n > MAX)
+            {
+                printf("\nInvalid number of routers!\n");
+                return 0;
+            }
 
-            distanceVector(n, graph);
+            printf("\nEnter the cost matrix.\n");
+            printf("Enter %d for no direct connection.\n\n",INF);
 
+            for (i = 0; i < n; i++)
+            {
+                for (j = 0; j < n; j++)
+                {
+                    printf("Cost R%d -> R%d: ",i + 1,j + 1);
+                    scanf("%d", &graph[i][j]);
+                    /* Cost from router to itself */
+                    if (i == j)
+                        graph[i][j] = 0;
+                }
+            }
+
+            displayMatrix(n, graph);
             break;
-
-
         case 2:
-
-            linkState(n, graph);
-
+            distanceVector(n, graph);
             break;
-
-
         case 3:
-
+            linkState(n, graph);
+            break;
+        case 4:
             printf("\n\nRunning Distance Vector...");
             distanceVector(n, graph);
-
             printf("\n\nRunning Link State...");
             linkState(n, graph);
+            break;
+        case 5: // <-- Inserted Case logic
+            printf("\nEnter starting router (1-%d): ", n);
+            scanf("%d", &sRouter);
+            printf("Enter ending router (1-%d): ", n);
+            scanf("%d", &eRouter);
+            printf("Enter new link cost (Use 999 for INF/Link Down): ");
+            scanf("%d", &uCost);
 
+            changeCost(n, graph, sRouter, eRouter, uCost);
+
+            printf("\nUpdated topology matrix view:\n");
+            displayMatrix(n, graph); // Display the updated matrix to verify changes
+            break;
+        case 6:
+            printf("\nEnter starting router (1-%d): ", n);
+            scanf("%d", &sRouter);
+            printf("Enter target destination router (1-%d): ", n);
+            scanf("%d", &eRouter);
+
+            findMinCostPath(n, graph, sRouter, eRouter);
+            break;
+        case 7:
+            printf("\nExiting...\n");
+            return 0;
+        default:
+            printf("\nInvlid choice!Try again.\n");
             break;
     }
-
-
-    printf("\n============================================\n");
-    printf("          PROGRAM COMPLETED\n");
-    printf("============================================\n");
-
-    return 0;
+    }
 }
+/*[24bcs063@mepcolinux ex4]$cc p1.c -o p1
+[24bcs063@mepcolinux ex4]$./p1
+------ROUTING ALGORITHM SIMULATOR MENU------
+
+1. Enter cost matrix
+2. Distance Vector Routing
+3. Link State Routing
+4. Run Both Algorithms
+5. Change Cost
+6. Find minimum cost path
+7. Exit
+
+Enter your choice: 1
+
+Enter number of routers (maximum 10): 5
+
+Enter the cost matrix.
+Enter 999 for no direct connection.
+
+Cost R1 -> R1: 0
+Cost R1 -> R2: 2
+Cost R1 -> R3: 999
+Cost R1 -> R4: 1
+Cost R1 -> R5: 999
+Cost R2 -> R1: 2
+Cost R2 -> R2: 0
+Cost R2 -> R3: 3
+Cost R2 -> R4: 999
+Cost R2 -> R5: 7
+Cost R3 -> R1: 999
+Cost R3 -> R2: 3
+Cost R3 -> R3: 0
+Cost R3 -> R4: 4
+Cost R3 -> R5: 2
+Cost R4 -> R1: 1
+Cost R4 -> R2: 999
+Cost R4 -> R3: 4
+Cost R4 -> R4: 0
+Cost R4 -> R5: 999
+Cost R5 -> R1: 999
+Cost R5 -> R2: 7
+Cost R5 -> R3: 2
+Cost R5 -> R4: 999
+Cost R5 -> R5: 0
+
+------COST MATRIX------
+
+        R1      R2      R3      R4      R5
+R1      0       2       INF     1       INF
+R2      2       0       3       INF     7
+R3      INF     3       0       4       2
+R4      1       INF     4       0       INF
+R5      INF     7       2       INF     0
+
+------ROUTING ALGORITHM SIMULATOR MENU------
+
+1. Enter cost matrix
+2. Distance Vector Routing
+3. Link State Routing
+4. Run Both Algorithms
+5. Change Cost
+6. Find minimum cost path
+7. Exit
+
+Enter your choice: 2
+
+------DISTANCE VECTOR ROUTING------
+
+Number of iterations = 2
+
+Routing Table of Router R1
+--------------------------------------------
+Destination     Next Hop        Distance
+R1              -               0
+R2              R2              2
+R3              R2              5
+R4              R4              1
+R5              R2              7
+
+Routing Table of Router R2
+--------------------------------------------
+Destination     Next Hop        Distance
+R1              R1              2
+R2              -               0
+R3              R3              3
+R4              R1              3
+R5              R3              5
+
+Routing Table of Router R3
+--------------------------------------------
+Destination     Next Hop        Distance
+R1              R2              5
+R2              R2              3
+R3              -               0
+R4              R4              4
+R5              R5              2
+
+Routing Table of Router R4
+--------------------------------------------
+Destination     Next Hop        Distance
+R1              R1              1
+R2              R1              3
+R3              R3              4
+R4              -               0
+R5              R3              6
+
+Routing Table of Router R5
+--------------------------------------------
+Destination     Next Hop        Distance
+R1              R3              7
+R2              R3              5
+R3              R3              2
+R4              R3              6
+R5              -               0
+
+------ROUTING ALGORITHM SIMULATOR MENU------
+
+1. Enter cost matrix
+2. Distance Vector Routing
+3. Link State Routing
+4. Run Both Algorithms
+5. Change Cost
+6. Find minimum cost path
+7. Exit
+
+Enter your choice: 3
+
+Enter source router (1-5): 1
+
+------LINK STATE ROUTING------
+
+Source Router: R1
+
+Destination     Cost    Shortest Path
+--------------------------------------------
+R1              0       R1
+R2              2       R1 -> R2
+R3              5       R1 -> R4 -> R3
+R4              1       R1 -> R4
+R5              7       R1 -> R4 -> R3 -> R5
+
+------ROUTING ALGORITHM SIMULATOR MENU------
+
+1. Enter cost matrix
+2. Distance Vector Routing
+3. Link State Routing
+4. Run Both Algorithms
+5. Change Cost
+6. Find minimum cost path
+7. Exit
+
+Enter your choice: 6
+
+Enter starting router (1-5): 1
+Enter target destination router (1-5): 5
+
+------ PATH ANALYSIS: R1 to R5 ------
+
+Absolute Minimum Cost: 7
+Shortest Router Path: R1 -> R4 -> R3 -> R5
+
+------ROUTING ALGORITHM SIMULATOR MENU------
+
+1. Enter cost matrix
+2. Distance Vector Routing
+3. Link State Routing
+4. Run Both Algorithms
+5. Change Cost
+6. Find minimum cost path
+7. Exit
+
+Enter your choice: 5
+
+Enter starting router (1-5): 1
+Enter ending router (1-5): 5
+Enter new link cost (Use 999 for INF/Link Down): 2
+
+Successfully updated link R1 <-> R5 to Cost: 2
+
+Updated topology matrix view:
+
+------COST MATRIX------
+
+        R1      R2      R3      R4      R5
+R1      0       2       INF     1       2
+R2      2       0       3       INF     7
+R3      INF     3       0       4       2
+R4      1       INF     4       0       INF
+R5      2       7       2       INF     0
+
+------ROUTING ALGORITHM SIMULATOR MENU------
+
+1. Enter cost matrix
+2. Distance Vector Routing
+3. Link State Routing
+4. Run Both Algorithms
+5. Change Cost
+6. Find minimum cost path
+7. Exit
+
+Enter your choice: 4
+
+running distance vector...
+------DISTANCE VECTOR ROUTING------
+
+Number of iterations = 2
+
+Routing Table of Router R1
+--------------------------------------------
+Destination     Next Hop        Distance
+R1              -               0
+R2              R2              2
+R3              R5              4
+R4              R4              1
+R5              R5              2
+
+Routing Table of Router R2
+--------------------------------------------
+Destination     Next Hop        Distance
+R1              R1              2
+R2              -               0
+R3              R3              3
+R4              R1              3
+R5              R1              4
+
+Routing Table of Router R3
+--------------------------------------------
+Destination     Next Hop        Distance
+R1              R5              4
+R2              R2              3
+R3              -               0
+R4              R4              4
+R5              R5              2
+
+Routing Table of Router R4
+--------------------------------------------
+Destination     Next Hop        Distance
+R1              R1              1
+R2              R1              3
+R3              R3              4
+R4              -               0
+R5              R1              3
+
+Routing Table of Router R5
+--------------------------------------------
+Destination     Next Hop        Distance
+R1              R1              2
+R2              R1              4
+R3              R3              2
+R4              R1              3
+R5              -               0
+
+
+Running Link State...
+Enter source router (1-5): 1
+
+------LINK STATE ROUTING------
+
+Source Router: R1
+
+Destination     Cost    Shortest Path
+--------------------------------------------
+R1              0       R1
+R2              2       R1 -> R2
+R3              4       R1 -> R5 -> R3
+R4              1       R1 -> R4
+R5              2       R1 -> R5
+
+------ROUTING ALGORITHM SIMULATOR MENU------
+
+1. Enter cost matrix
+2. Distance Vector Routing
+3. Link State Routing
+4. Run Both Algorithms
+5. Change Cost
+6. Find minimum cost path
+7. Exit
+
+Enter your choice: 6
+
+Enter starting router (1-5): 2
+Enter target destination router (1-5): 5
+
+------ PATH ANALYSIS: R2 to R5 ------
+
+Absolute Minimum Cost: 4
+Shortest Router Path: R2 -> R1 -> R5
+
+------ROUTING ALGORITHM SIMULATOR MENU------
+
+1. Enter cost matrix
+2. Distance Vector Routing
+3. Link State Routing
+4. Run Both Algorithms
+5. Change Cost
+6. Find minimum cost path
+7. Exit
+
+Enter your choice: 8
+
+Invlid choice!Try again.
+
+------ROUTING ALGORITHM SIMULATOR MENU------
+
+1. Enter cost matrix
+2. Distance Vector Routing
+3. Link State Routing
+4. Run Both Algorithms
+5. Change Cost
+6. Find minimum cost path
+7. Exit
+
+Enter your choice: 7
+
+Exiting...*/
