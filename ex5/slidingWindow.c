@@ -124,17 +124,22 @@ int main()
 {
     int choice;
     int n, window, lost;
-
+    while(1){
     printf("====================================\n");
     printf("     SLIDING WINDOW PROTOCOL\n");
     printf("====================================\n");
 
     printf("\n1. Go-Back-N\n");
     printf("2. Selective Repeat\n");
+    printf("3. Exit\n");
 
     printf("\nEnter your choice: ");
     scanf("%d", &choice);
-
+    if (choice ==3)
+    {
+       printf("\nExiting...\n");
+       return 0;
+    }
     printf("Enter number of frames: ");
     scanf("%d", &n);
 
@@ -147,16 +152,13 @@ int main()
     if (window <= 0 || window > n)
     {
         printf("Invalid window size.\n");
-        return 0;
     }
 
-    if (lost < 0 || lost > n)
+    else if (lost < 0 || lost > n)
     {
         printf("Invalid frame number.\n");
-        return 0;
     }
-
-    if (choice == 1)
+    else if (choice == 1)
     {
         goBackN(n, window, lost);
     }
@@ -168,6 +170,5 @@ int main()
     {
         printf("Invalid choice.\n");
     }
-
-    return 0;
+}
 }
