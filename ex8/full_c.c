@@ -26,29 +26,32 @@ int main(void) {
     addr.sin_port = htons(PORT);
     addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    // Try connecting and wait if server returns BUSY
+    if (sendto(s, "HELLO", 5, 0, (struct sockaddr *)&addr, len) < 0) {
+        perror("sendto");
+        close(s);
+        return 1;
+    }
+
+    // Wait for initial response from server
     while (1) {
-        if (sendto(s, "HELLO", 5, 0, (struct sockaddr *)&addr, len) < 0) {
-            perror("sendto");
+        n = recvfrom(s, b, SIZE - 1, 0, NULL, NULL);
+        if (n <= 0) {
+            printf("Server did not respond.\n");
             close(s);
             return 1;
         }
+        b[n] = '\0';
 
-        // Set a timeout or wait for response
-        n = recvfrom(s, b, SIZE - 1, 0, NULL, NULL);
-        if (n > 0) {
-            b[n] = '\0';
-            if (strcmp(b, "BUSY") == 0) {
-                printf("Server is busy with another client. Waiting 3 seconds to retry...\n");
-                sleep(3);
-                continue;
-            } else if (strcmp(b, "CONNECTED") == 0) {
-                break;
-            } else {
-                printf("Unexpected server response: %s\n", b);
-                close(s);
-                return 1;
-            }
+        if (strcmp(b, "WAIT") == 0) {
+            printf("Server is busy. You are placed in the queue. Waiting for your turn...\n");
+            fflush(stdout);
+            continue; // Keep waiting until CONNECTED arrives
+        } else if (strcmp(b, "CONNECTED") == 0) {
+            break;
+        } else {
+            printf("Unexpected server response: %s\n", b);
+            close(s);
+            return 1;
         }
     }
 
@@ -81,9 +84,9 @@ int main(void) {
         }
 
         if (running && FD_ISSET(STDIN_FILENO, &readfds)) {
-            if (!fgets(b, sizeof(b), stdin))
+            if (!fgets(b, sizeof(b), stdin)) 
                 strcpy(b, "EXIT");
-            else
+            else 
                 b[strcspn(b, "\n")] = '\0';
 
             if (b[0] == '\0') {
@@ -101,7 +104,7 @@ int main(void) {
                 printf("You left the chat.\n");
                 running = 0;
             } else {
-                printf("Client> ", b);
+                printf("Client> ");
                 fflush(stdout);
             }
         }
